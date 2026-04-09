@@ -1,6 +1,8 @@
 .git
 .next
 node_modules
+.env
+.env.*
 check-if-email-exists
 _reference_voltagent
 .devserver*
