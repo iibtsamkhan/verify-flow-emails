@@ -1,0 +1,201 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  CANCELED
+}
+
+enum CreditEntryType {
+  GRANT
+  USAGE
+  ADJUSTMENT
+  REFUND
+}
+
+enum JobStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum ReachabilityStatus {
+  SAFE
+  RISKY
+  INVALID
+  UNKNOWN
+}
+
+enum VerificationReasonCode {
+  DELIVERABLE
+  CATCH_ALL
+  DISPOSABLE
+  ROLE_ACCOUNT
+  SMTP_REJECTED
+  MAILBOX_DISABLED
+  MAILBOX_FULL
+  SYNTAX_INVALID
+  ENGINE_TIMEOUT
+  ENGINE_HTTP_ERROR
+  ENGINE_NETWORK_ERROR
+  UNKNOWN
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+}
+
+model UserAccount {
+  id          String            @id @default(cuid())
+  clerkUserId String            @unique
+  email       String?
+  credits     Int               @default(0)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  subscription Subscription?
+  ledgers     CreditLedger[]
+  jobs        VerificationJob[]
+}
+
+model Subscription {
+  id        String             @id @default(cuid())
+  userId    String             @unique
+  user      UserAccount        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan      String             @default("trial")
+  status    SubscriptionStatus @default(TRIAL)
+  renewsAt  DateTime?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+}
+
+model CreditLedger {
+  id           String          @id @default(cuid())
+  userId       String
+  user         UserAccount     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entryType    CreditEntryType
+  amount       Int
+  balanceAfter Int
+  reason       String
+  metadata     Json?
+  createdAt    DateTime        @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model VerificationJob {
+  id             String               @id @default(cuid())
+  userId         String
+  user           UserAccount          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  idempotencyKey String?
+  sourceFileName String?
+  sourceColumn   String?
+  totalRows      Int                  @default(0)
+  totalEmails    Int                  @default(0)
+  creditsUsed    Int                  @default(0)
+  status         JobStatus            @default(QUEUED)
+  safeCount      Int                  @default(0)
+  riskyCount     Int                  @default(0)
+  invalidCount   Int                  @default(0)
+  unknownCount   Int                  @default(0)
+  retryCount     Int                  @default(0)
+  timeoutCount   Int                  @default(0)
+  providerErrorCount Int              @default(0)
+  averageLatencyMs Int?
+  successRate    Float?
+  unknownRate    Float?
+  queuedAt       DateTime             @default(now())
+  startedAt      DateTime?
+  completedAt    DateTime?
+  processingMs   Int?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  results        VerificationResult[]
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+  @@unique([userId, idempotencyKey])
+}
+
+model VerificationResult {
+  id            String                 @id @default(cuid())
+  jobId          String
+  job            VerificationJob       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  rowNumber      Int?
+  rawValue       String?
+  email          String
+  isReachable    ReachabilityStatus
+  reasonCode     VerificationReasonCode?
+  reasonMessage  String?
+  confidenceScore Int?
+  latencyMs      Int?
+  attemptCount   Int                  @default(1)
+  error          String?
+  createdAt      DateTime             @default(now())
+
+  @@index([jobId])
+}
+
+model VerificationMetricBucket {
+  id                 String   @id @default(cuid())
+  bucketStart        DateTime @unique
+  totalChecks        Int      @default(0)
+  safeChecks         Int      @default(0)
+  riskyChecks        Int      @default(0)
+  invalidChecks      Int      @default(0)
+  unknownChecks      Int      @default(0)
+  providerErrorCount Int      @default(0)
+  timeoutCount       Int      @default(0)
+  retryCount         Int      @default(0)
+  totalLatencyMs     BigInt   @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Admin {
+  id            String          @id @default(cuid())
+  email         String          @unique
+  passwordHash  String
+  role          AdminRole       @default(ADMIN)
+  isActive      Boolean         @default(true)
+  createdById   String?
+  createdBy     Admin?          @relation("AdminCreatedBy", fields: [createdById], references: [id])
+  createdAdmins Admin[]         @relation("AdminCreatedBy")
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  audits        AdminAuditLog[]
+  sessions      AdminSession[]
+}
+
+model AdminAuditLog {
+  id            String   @id @default(cuid())
+  adminId       String
+  admin         Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  action        String
+  targetAdminId String?
+  metadata      Json?
+  createdAt     DateTime @default(now())
+
+  @@index([adminId, createdAt])
+}
+
+model AdminSession {
+  id        String   @id @default(cuid())
+  adminId   String
+  admin     Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([adminId, expiresAt])
+}
