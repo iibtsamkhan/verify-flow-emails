@@ -1,0 +1,11 @@
+.git
+.next
+node_modules
+check-if-email-exists
+_reference_voltagent
+.devserver*
+*.log
+*.pid
+*.tsbuildinfo
+preview.html
+preview-dark.html
