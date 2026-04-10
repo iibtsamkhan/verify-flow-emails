@@ -141,7 +141,7 @@ const NAV_MENUS: NavMenu[] = [
       {
         label: "Pricing",
         description: "Choose a plan for your verification volume and workflow needs.",
-        href: "#pricing"
+        href: "/pricing"
       }
     ]
   }
@@ -1169,14 +1169,18 @@ export default function HomePage() {
 
       <footer className="vf-footer">
         <div className="vf-wrap vf-footer-inner">
-          <a className="vf-logo vf-footer-logo" href="#">
+          <a className="vf-logo vf-footer-logo" href="/">
             <span className="vf-logo-bolt">v</span>
             <span>verifyflow</span>
           </a>
-          <p>
-            Enterprise email verification platform for growth and operations teams.{" "}
+          <div className="vf-footer-links">
+            <a href="/pricing">Pricing</a>
+            <a href="/terms">Terms</a>
+            <a href="/privacy">Privacy</a>
+            <a href="/refund-policy">Refunds</a>
             <a href="/admin/login">Admin</a>
-          </p>
+          </div>
+          <p>Enterprise email verification platform for growth and operations teams.</p>
         </div>
       </footer>
     </div>

@@ -1840,6 +1840,23 @@ a {
   margin: 0;
 }
 
+.vf-footer-links {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.vf-footer-links a {
+  color: var(--text-soft);
+  font-size: 0.82rem;
+  transition: color 170ms var(--ease-out);
+}
+
+.vf-footer-links a:hover {
+  color: var(--accent-soft);
+}
+
 .vf-footer-logo {
   font-size: 1rem;
   font-weight: 600;
@@ -1851,6 +1868,103 @@ a {
   height: 16px;
   animation: none;
   text-shadow: none;
+}
+
+.vf-legal-page,
+.vf-pricing-page {
+  padding-top: 2.6rem;
+  padding-bottom: 2.6rem;
+}
+
+.vf-legal-header {
+  display: grid;
+  gap: 0.72rem;
+  margin-bottom: 0.95rem;
+}
+
+.vf-legal-head-copy p {
+  margin: 0;
+  color: var(--text-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  font-size: 0.78rem;
+}
+
+.vf-legal-head-copy h1 {
+  margin: 0.3rem 0 0;
+  font-size: clamp(1.7rem, 4.2vw, 2.3rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.vf-legal-head-copy span {
+  display: block;
+  margin-top: 0.24rem;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+}
+
+.vf-legal-card {
+  border: 1px solid rgba(61, 58, 57, 0.9);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(14, 14, 18, 0.96), rgba(8, 8, 11, 0.96)),
+    radial-gradient(circle at 100% 0%, rgba(47, 214, 161, 0.07), transparent 44%);
+  padding: 1rem;
+}
+
+.vf-legal-card h2 {
+  margin: 0.9rem 0 0;
+  font-size: 1rem;
+  color: #d8fff1;
+}
+
+.vf-legal-card h2:first-child {
+  margin-top: 0;
+}
+
+.vf-legal-card p,
+.vf-legal-card li {
+  margin: 0.4rem 0 0;
+  color: var(--text-soft);
+  font-size: 0.88rem;
+  line-height: 1.56;
+}
+
+.vf-legal-card ul {
+  margin: 0.35rem 0 0;
+  padding-left: 1.05rem;
+}
+
+.vf-legal-card a {
+  color: var(--accent-soft);
+}
+
+.vf-legal-links-strip {
+  margin-top: 0.85rem;
+  border: 1px solid rgba(61, 58, 57, 0.86);
+  border-radius: 10px;
+  background: rgba(9, 9, 12, 0.86);
+  padding: 0.62rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.vf-legal-links-strip a {
+  border: 1px solid rgba(61, 58, 57, 0.8);
+  border-radius: 999px;
+  padding: 0.22rem 0.52rem;
+  font-size: 0.76rem;
+  color: var(--text-soft);
+  transition:
+    border-color 170ms var(--ease-out),
+    color 170ms var(--ease-out);
+}
+
+.vf-legal-links-strip a:hover {
+  border-color: rgba(47, 214, 161, 0.54);
+  color: #d8fff1;
 }
 
 .vf-auth-layout {
